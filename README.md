@@ -32,7 +32,6 @@ This **AI Security Experiments Series** is my attempt to:
 * Identify possible ethical concerns
 * Explore potential security risks
 
----
 
 Each experiment typically includes:
 
@@ -41,8 +40,6 @@ Each experiment typically includes:
 * Fairness evaluation
 * Security / robustness testing
 * Observations and insights
-
----
 
 ## Current Experiments
 
@@ -55,7 +52,6 @@ Decision Tree Model Audit
 
 More experiments will be added as I progress through different ML models.
 
----
 
 ## Disclaimer
 
@@ -75,4 +71,5 @@ All experiments are conducted on public datasets and are intended for learning a
 ## Author
 
 Aditi V
+
 Exploring AI Security, Responsible AI, and applied machine learning.
