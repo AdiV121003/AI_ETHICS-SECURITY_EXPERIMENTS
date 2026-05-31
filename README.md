@@ -43,15 +43,8 @@ Each experiment typically includes:
 
 ## Current Experiments
 
-Decision Tree Model Audit
-
-* Loan approval prediction model
-* Feature importance analysis
-* Fairness analysis (age, gender, education)
-* Model manipulation testing
-
-More experiments will be added as I progress through different ML models.
-
+- Decision Tree for Loan Prediction
+- Logistic Regression for Credit Risk Scoring
 
 ## Disclaimer
 
