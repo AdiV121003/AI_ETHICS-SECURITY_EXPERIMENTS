@@ -75,6 +75,7 @@ only helps if someone is actively auditing.
 | Foreign Workers | 191 | 68.1% | 65.4% |
 | Non-Foreign Workers | 9 | 88.9% | 88.9% |
 
+
 **~20 percentage point accuracy gap persists across both models.**
 
 Key findings from error analysis:
@@ -92,6 +93,10 @@ Key findings from error analysis:
 - False positive rate for foreign workers (18.3%) vs non-foreign workers 
   (11.1%) suggests creditworthy foreign applicants face higher wrongful 
   rejection rates
+- Unlike is_foreign_worker (96.3% single value), purpose_car has sufficient variance (23.4% positive)
+  making its coefficient a genuine learned signal, not a statistical artifact. However,
+  whether car loan purpose legitimately predicts credit risk or reflects historical lending
+  bias warrants further investigation.
 
 ## 📎 Related
 - 📝 Blog Post (TBA)
