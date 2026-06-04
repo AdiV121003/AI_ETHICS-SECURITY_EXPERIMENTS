@@ -54,16 +54,6 @@ Logistic regression achieves acceptable AUC (0.75) but critically misses 50%+
 of bad credit customers even after SMOTE — a direct consequence of its linear 
 decision boundary being unable to capture complex feature interactions.
 
-**Ethics & Fairness:**
-- `is_foreign_worker` carried the strongest negative coefficient in the baseline 
-  model (-0.857), directly penalising nationality in credit decisions — a legally 
-  protected attribute in most jurisdictions
-- SMOTE reduced this bias nearly by half (-0.386), showing a rare case where a 
-  technical fix had a measurable fairness benefit
-- Loan purpose penalties (car, education) amplified significantly post-SMOTE, 
-  warranting investigation into whether these reflect genuine risk or historical 
-  lending bias
-
 **Security:**
 - High-magnitude coefficients on sensitive features represent adversarial surfaces
 - If model behaviour is exposed via model inversion or membership inference attacks,
@@ -76,6 +66,30 @@ trustworthy decisions. Logistic regression makes its biases visible — but visi
 only helps if someone is actively auditing.
 
 ---
+## 🔎 Disparate Impact Analysis
+
+| Group | Test Samples | Baseline Accuracy | Post-SMOTE Accuracy |
+|---|---|---|---|
+| Foreign Workers | 191 | 68.1% | 65.4% |
+| Non-Foreign Workers | 9 | 88.9% | 88.9% |
+
+**~20 percentage point accuracy gap persists across both models.**
+
+Key findings from error analysis:
+
+- SMOTE reduced `is_foreign_worker` coefficient by 55% (-0.857 → -0.386)
+  but did not close the accuracy gap — coefficient improvement ≠ 
+  fairness improvement
+- Non-foreign worker comparison group (n=9) is statistically unreliable,
+  itself a finding — 96.3% of the dataset is foreign workers, making 
+  `is_foreign_worker` a near-zero variance feature with no legitimate 
+  predictive value
+- A legally protected characteristic with near-zero variance carrying 
+  a non-trivial negative coefficient represents both a fairness violation 
+  and an adversarial surface
+- False positive rate for foreign workers (18.3%) vs non-foreign workers 
+  (11.1%) suggests creditworthy foreign applicants face higher wrongful 
+  rejection rates
 
 ## 📎 Related
 - 📝 Blog Post (TBA)
