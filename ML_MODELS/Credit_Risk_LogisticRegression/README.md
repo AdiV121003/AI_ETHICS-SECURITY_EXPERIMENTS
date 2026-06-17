@@ -59,9 +59,7 @@ impact testing** across foreign worker status.
 ### Coefficient Analysis
 Comparing baseline vs post-SMOTE coefficients revealed:
 * `is_foreign_worker_yes` carried a coefficient of **-0.857** in the 
-  baseline model — reducing odds of good credit prediction by 57.6%
-* SMOTE nearly halved this coefficient to **-0.386** — a rare case 
-  where a technical fix produced a measurable fairness benefit on paper
+  baseline model, decreasing odds of good credit prediction by 57.6%
 * `purpose_car (new)` coefficient amplified from -0.780 to -1.862 
   after SMOTE — model shifted reliance from demographic to financial 
   behavior features
@@ -78,7 +76,7 @@ Error analysis grouped by foreign worker status revealed:
   a statistical artifact rather than genuine learned signal
 * The feature is legally impermissible in credit decisions under EU 
   anti-discrimination frameworks regardless of its statistical impact
-* Should have been removed during feature selection — its presence 
+* I should have removed it during feature selection — its presence 
   represents a data governance failure at ingestion stage
 
 ### Two Types of Problematic Coefficients
@@ -106,22 +104,14 @@ Error analysis grouped by foreign worker status revealed:
 * Removing protected characteristics before training reduces both 
   legal liability and adversarial attack surface simultaneously
 
-### Data Leakage Bug (Caught and Fixed)
-* Initial implementation applied StandardScaler before train-test 
-  split — leaking test information into training
-* Fixed by fitting scaler on training data only and transforming 
-  test data separately
-* Accuracy dropped from 0.71 → 0.69 after fix — revealing true 
-  model performance
-
 ---
 
 ## Key Insights
 * Logistic regression achieves acceptable AUC (0.75) but critically 
-  misses 57% of bad credit customers — a direct consequence of its 
+  misses 57% of bad credit customers. This is due to its 
   linear decision boundary
-* SMOTE improved minority class recall marginally but didn't close 
-  the real-world accuracy gap for foreign workers — **coefficient 
+* SMOTE improved minority class recall marginally but didn't improve
+   accuracy gap for foreign workers — **coefficient 
   improvement ≠ fairness improvement**
 * `is_foreign_worker` is simultaneously a legal violation, a 
   statistical artifact, and an adversarial surface — yet would have 
@@ -133,9 +123,8 @@ Error analysis grouped by foreign worker status revealed:
 ---
 
 ## What I Would Do Differently
-* Conduct a **fairness-aware feature audit** before modeling — 
-  flagging protected characteristics and near-zero variance features 
-  for removal
+* Conduct a **fairness-aware feature audit** before modeling by
+  removing protected characteristics and near-zero variance features 
 * Remove `is_foreign_worker` and `status_and_sex` before training
 * Try `class_weight='balanced'` before SMOTE for logistic regression 
   specifically
@@ -148,8 +137,6 @@ Error analysis grouped by foreign worker status revealed:
 * Retrain without protected characteristics and compare results
 * Apply Random Forest to the same dataset — same ethics lens, 
   higher performance, less transparency (Experiment 3)
-* Implement formal fairness metrics — Demographic Parity, 
-  Equal Opportunity
 * Test class_weight='balanced' and compare with SMOTE results
 
 ---
