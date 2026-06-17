@@ -1,111 +1,159 @@
-# Credit Risk Prediction via Logistic Regression
-### AI Ethics & Security Experiments — Experiment 2
+# Credit Risk Scoring Audit (Fairness & Security Analysis)
 
-This project applies Logistic Regression to the German Credit Dataset to predict 
-credit risk (good/bad borrowers) and analyse the model from ethical and security 
-perspectives. It is the second experiment in the 
-[AI Ethics & Security Experiments](https://github.com/AdiV121003/AI_ETHICS-SECURITY_EXPERIMENTS)) series.
+## Project Overview
+This project analyzes a credit risk scoring model from a **Responsible 
+AI and AI Security perspective**.
 
-<img width="2752" height="1536" alt="Gemini_Generated_Image_ws7sriws7sriws7s" src="https://github.com/user-attachments/assets/b86c35aa-200e-42ac-9466-0c6b3e96c89a" />
+Instead of focusing only on accuracy, the goal is to understand:
+* Whether a highly interpretable model is sufficient for high-stakes 
+  financial decisions
+* How class imbalance affects both performance and fairness
+* Whether technical fixes like SMOTE translate into real-world 
+  fairness improvements
+* Which features carry ethically or legally problematic signals
 
----
-
-## 🎯 Objectives
-- Understand logistic regression in a real-world fintech context
-- Handle class imbalance via SMOTE and evaluate its impact
-- Analyse model coefficients for bias and fairness concerns
-- Explore the interpretability vs performance trade-off in credit scoring
-
----
-
-## 📂 Dataset
-**German Credit Dataset** via KaggleHub (`jumpingdino/german-credit-dataset`)
-- 1,000 records, 21 features
-- Target: `good` (700) / `bad` (300) — 70:30 class imbalance
-- Features include financial behavior, demographics, and loan purpose
+The model used in this project is a **Logistic Regression classifier** 
+trained on the German Credit Dataset.
 
 ---
 
-## 🔬 Experiment Steps
-| Step | Description |
-|---|---|
-| 1 | Data Loading |
-| 2 | Exploratory Data Analysis |
-| 3 | Data Preprocessing |
-| 4 | Baseline Logistic Regression |
-| 5 | Class Imbalance Handling via SMOTE |
-| 6 | Ethical & Security Analysis |
+## Project Objectives
+* Train a credit risk scoring model using Logistic Regression
+* Handle class imbalance via **SMOTE** and evaluate its impact
+* Perform **coefficient analysis** for model interpretability
+* Evaluate **fairness across demographic groups**
+* Investigate **legally sensitive features** and their influence 
+  on predictions
+* Explore the **interpretability vs performance trade-off** in 
+  regulated AI systems
+
+This project is part of my **AI Ethics & Security Experiments** series 
+exploring Responsible AI and AI Security in real-world domains.
 
 ---
 
-## 📊 Key Results
+## Model Summary
 
-| Metric | Baseline | Post-SMOTE |
+| | Baseline Model | Post-SMOTE Model |
 |---|---|---|
+| Model | Logistic Regression | Logistic Regression |
 | Accuracy | 0.69 | 0.68 |
 | Bad Credit Recall | 0.43 | 0.50 |
 | Good Credit Recall | 0.79 | 0.75 |
 | AUC-ROC | 0.75 | ~0.74 |
 
----
-
-## 🔍 Key Findings
-
-**Performance:**
-Logistic regression achieves acceptable AUC (0.75) but critically misses 50%+ 
-of bad credit customers even after SMOTE — a direct consequence of its linear 
-decision boundary being unable to capture complex feature interactions.
-
-**Security:**
-- High-magnitude coefficients on sensitive features represent adversarial surfaces
-- If model behaviour is exposed via model inversion or membership inference attacks,
-  protected attributes could be manipulated to systematically disadvantage specific 
-  applicant groups
-
-**Core Trade-off:**
-Interpretability without sufficient performance produces explainable failure, not 
-trustworthy decisions. Logistic regression makes its biases visible — but visibility 
-only helps if someone is actively auditing.
-
----
-## 🔎 Disparate Impact Analysis
-
-| Group | Test Samples | Baseline Accuracy | Post-SMOTE Accuracy |
-|---|---|---|---|
-| Foreign Workers | 191 | 68.1% | 65.4% |
-| Non-Foreign Workers | 9 | 88.9% | 88.9% |
-
-
-**~20 percentage point accuracy gap persists across both models.**
-
-Key findings from error analysis:
-
-- SMOTE reduced `is_foreign_worker` coefficient by 55% (-0.857 → -0.386)
-  but did not close the accuracy gap — coefficient improvement ≠ 
-  fairness improvement
-- Non-foreign worker comparison group (n=9) is statistically unreliable,
-  itself a finding — 96.3% of the dataset is foreign workers, making 
-  `is_foreign_worker` a near-zero variance feature with no legitimate 
-  predictive value
-- A legally protected characteristic with near-zero variance carrying 
-  a non-trivial negative coefficient represents both a fairness violation 
-  and an adversarial surface
-- False positive rate for foreign workers (18.3%) vs non-foreign workers 
-  (11.1%) suggests creditworthy foreign applicants face higher wrongful 
-  rejection rates
-- Unlike is_foreign_worker (96.3% single value), purpose_car has sufficient variance (23.4% positive)
-  making its coefficient a genuine learned signal, not a statistical artifact. However,
-  whether car loan purpose legitimately predicts credit risk or reflects historical lending
-  bias warrants further investigation.
-
-## 📎 Related
-- 📝 Blog Post (TBA)
-- 🔗 [Experiment 1 — Decision Trees for Loan Approval](https://medium.com/ai-ethics-and-security-experiments/is-your-ai-powered-loan-approval-model-fair-and-secure-e68ab859d34c)
+Key features influencing predictions (baseline):
+* `status_account_no checking account` — strongest positive predictor
+* `is_foreign_worker_yes` — strongest negative predictor (baseline)
+* `purpose_car (new)` — strongest negative predictor (post-SMOTE)
+* `secondary_obligor_guarantor` — strong positive predictor
+* `status_savings_< 100 DM` — negative predictor
 
 ---
 
-## ⚠️ Disclaimer
-This project is for educational purposes. The German Credit Dataset contains 
-demographic features (nationality, gender) that would be legally impermissible 
-in real credit scoring systems in many jurisdictions. Their inclusion here is 
-purely for demonstrating algorithmic bias detection.
+## Fairness Analysis
+
+Fairness was evaluated through **coefficient analysis** and **disparate 
+impact testing** across foreign worker status.
+
+### Coefficient Analysis
+Comparing baseline vs post-SMOTE coefficients revealed:
+* `is_foreign_worker_yes` carried a coefficient of **-0.857** in the 
+  baseline model — reducing odds of good credit prediction by 57.6%
+* SMOTE nearly halved this coefficient to **-0.386** — a rare case 
+  where a technical fix produced a measurable fairness benefit on paper
+* `purpose_car (new)` coefficient amplified from -0.780 to -1.862 
+  after SMOTE — model shifted reliance from demographic to financial 
+  behavior features
+
+### Disparate Impact Analysis
+Error analysis grouped by foreign worker status revealed:
+* Non-foreign workers: **88.9%** prediction accuracy
+* Foreign workers: **65-68%** prediction accuracy
+* A **~20 percentage point accuracy gap** persisting across both models
+
+### Critical Finding: Near-Zero Variance Problem
+* 963/1000 samples (96.3%) are foreign workers
+* `is_foreign_worker` has near-zero variance — making its coefficient 
+  a statistical artifact rather than genuine learned signal
+* The feature is legally impermissible in credit decisions under EU 
+  anti-discrimination frameworks regardless of its statistical impact
+* Should have been removed during feature selection — its presence 
+  represents a data governance failure at ingestion stage
+
+### Two Types of Problematic Coefficients
+
+| | is_foreign_worker | purpose_car (new) |
+|---|---|---|
+| Variance | Near-zero (96.3%) | Sufficient (77/23) |
+| Coefficient type | Statistical artifact | Genuine learned signal |
+| Legal status | Protected characteristic | Neutral feature |
+| Accuracy gap | ~20 points | Negligible |
+| Fix | Remove before training | Investigate bias source |
+
+---
+
+## Security Analysis
+
+### Adversarial Surface via Sensitive Coefficients
+* High-magnitude coefficients on sensitive features represent 
+  exploitable vulnerabilities
+* If model behavior is exposed through **model inversion** or 
+  **membership inference attacks**, an adversary could identify 
+  which features most influence predictions
+* `is_foreign_worker` coefficient of -0.857 could be manipulated 
+  to systematically disadvantage specific applicant groups
+* Removing protected characteristics before training reduces both 
+  legal liability and adversarial attack surface simultaneously
+
+### Data Leakage Bug (Caught and Fixed)
+* Initial implementation applied StandardScaler before train-test 
+  split — leaking test information into training
+* Fixed by fitting scaler on training data only and transforming 
+  test data separately
+* Accuracy dropped from 0.71 → 0.69 after fix — revealing true 
+  model performance
+
+---
+
+## Key Insights
+* Logistic regression achieves acceptable AUC (0.75) but critically 
+  misses 57% of bad credit customers — a direct consequence of its 
+  linear decision boundary
+* SMOTE improved minority class recall marginally but didn't close 
+  the real-world accuracy gap for foreign workers — **coefficient 
+  improvement ≠ fairness improvement**
+* `is_foreign_worker` is simultaneously a legal violation, a 
+  statistical artifact, and an adversarial surface — yet would have 
+  shipped undetected without post-hoc auditing
+* Interpretability made every bias visible — but visibility only 
+  helps if someone is actively auditing
+* Fairness auditing must begin at data ingestion, not after modeling
+
+---
+
+## What I Would Do Differently
+* Conduct a **fairness-aware feature audit** before modeling — 
+  flagging protected characteristics and near-zero variance features 
+  for removal
+* Remove `is_foreign_worker` and `status_and_sex` before training
+* Try `class_weight='balanced'` before SMOTE for logistic regression 
+  specifically
+* Treat fairness as a mandatory checkpoint at every pipeline stage, 
+  not a post-hoc audit
+
+---
+
+## Future Work
+* Retrain without protected characteristics and compare results
+* Apply Random Forest to the same dataset — same ethics lens, 
+  higher performance, less transparency (Experiment 3)
+* Implement formal fairness metrics — Demographic Parity, 
+  Equal Opportunity
+* Test class_weight='balanced' and compare with SMOTE results
+
+---
+
+## Related
+* 📝 [Blog Post]([link](https://medium.com/ai-ethics-and-security-experiments/when-xai-isnt-enough-logistic-regression-credit-risk-and-the-limits-of-simplicity-37e509a68c05))
+* 🔗 [Experiment 1 — Decision Tree Loan Approval Audit]([link](https://github.com/AdiV121003/AI_ETHICS-SECURITY_EXPERIMENTS/tree/main/ML_MODELS/DecisionTree_LoanApproval_Audit))
