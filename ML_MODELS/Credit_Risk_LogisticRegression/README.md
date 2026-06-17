@@ -142,5 +142,5 @@ Error analysis grouped by foreign worker status revealed:
 ---
 
 ## Related
-* 📝 [Blog Post]([link](https://medium.com/ai-ethics-and-security-experiments/when-xai-isnt-enough-logistic-regression-credit-risk-and-the-limits-of-simplicity-37e509a68c05))
-* 🔗 [Experiment 1 — Decision Tree Loan Approval Audit]([link](https://github.com/AdiV121003/AI_ETHICS-SECURITY_EXPERIMENTS/tree/main/ML_MODELS/DecisionTree_LoanApproval_Audit))
+* Blog - [https://medium.com/ai-ethics-and-security-experiments/when-xai-isnt-enough-logistic-regression-credit-risk-and-the-limits-of-simplicity-37e509a68c05]
+* 🔗 [Experiment 1 — Decision Tree Loan Approval Audit] [https://github.com/AdiV121003/AI_ETHICS-SECURITY_EXPERIMENTS/tree/main/ML_MODELS/DecisionTree_LoanApproval_Audit])
